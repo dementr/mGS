@@ -1,0 +1,7 @@
+{
+  "name": "mGS",
+  "version": "0.0.1",
+  "devDependencies": {
+    "Socket.IO": "~2.0.3"
+  }
+}
