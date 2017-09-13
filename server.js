@@ -3,7 +3,7 @@ const io = require('socket.io')({
  pingTimeout: 50 //сколько мс перед отправкой нового пакета ping ( 25000).
 });
 
-io.attach(4567);
+io.attach(55555);
 
 var players = [];
 
