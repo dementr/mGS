@@ -42,8 +42,8 @@ io.on('connection', function(socket){
 	  players.push(player);
   //  console.log('0 ', players);
     socket.join('chat', () => {
-      let rooms = Objects.keys(socket.rooms);
-      console.log(rooms);
+      //let rooms = Objects.keys(socket.rooms);
+      //console.log(rooms);
       socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
     });
   });
@@ -81,7 +81,7 @@ io.on('connection', function(socket){
    console.log(players);
 
    queue.push(players.find((search) => {return search.id == socket.id}));
-
+   console.log(queue);
    if(queue.length >= 2){
 
      socket.join('game', () => {
@@ -91,7 +91,7 @@ io.on('connection', function(socket){
        socket.emit('joinGame', { hello: 'error' });
      });
 
-     io.sockets.socket(queue[0].id).emit('joinr', {});
+     io.sockets.socket(queue[0].id).emit('joinr', {hu : 'sd'});
    }
 
  });
