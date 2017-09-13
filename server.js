@@ -53,19 +53,19 @@ io.on('connection', function(socket){
 
   socket.on('msgChat', function(data){
    //console.log({nick: socket.id, msg: data});
-    let log = socket.id;
-    console.log({nick: log, msg: data});
+    //let log = socket.id;
+    //console.log({nick: log, msg: data});
    //console.log(log);
     let nick = "";
-
-    for(let i =0 ;i < players.length; i++){
+    nick = players.find(socket.id);
+    /*for(let i =0 ;i < players.length; i++){
 
       if(players[i].id == log){
         nick = players[i].nick;
         break;
 	     }
      }
-     
+     */     
      io.sockets.in('chat').emit('smsgChat', {nick: nick, msg: data.msg});
    });
 
