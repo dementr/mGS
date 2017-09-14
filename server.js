@@ -1,11 +1,13 @@
 const io = require('socket.io')({
  transports: ['websocket'],
- pingTimeout: 50 //сколько мс перед отправкой нового пакета ping ( 25000).
+ //pingTimeout: 50 //сколько мс перед отправкой нового пакета ping ( 25000).
 });
 
-//let searchsGame = require('searchGame');
-
 io.attach(55555);
+
+let searchsGame = require('./searchGame');
+let fcon = require('./connections');
+let fchat = require('./chat');
 
 let players = [];
 
@@ -14,16 +16,14 @@ io.on('connection', function(socket){
   console.log(socket.handshake);
 
   socket.on('auth', function(data){
-    console.log(data);
+    //console.log(data);
     let {login, password} = data;
-    console.log(login);
-	   console.log(password);
+    //console.log(login);
+	  //console.log(password);
      if(login == 'world2' && password == '12345'){
-    /*for(let i=0; i < 500; i++){
-      io.sockets.emit('go', { hello: 'hello', is1: i});
-      console.log({ hello: 'hello', is1: i});
-    }*/
         socket.emit('authOk', { hello: 'hello'});
+        players.push(new fcon.Player('data.nick', socket.id));
+        console.log(players);
       } else {
 	       socket.emit('errors', { hello: 'error' });
       }
@@ -36,10 +36,8 @@ io.on('connection', function(socket){
  // creat chat
   socket.on('joinchat', function(data){
     //console.log(data);
-	  let player = {};
-	  player.id = socket.id;
-	  player.nick = data.nick;
-	  players.push(player);
+
+	  players.push(fchat.setnick(data.nick, socket.id));
   //  console.log('0 ', players);
     socket.join('chat', () => {
       //let rooms = Objects.keys(socket.rooms);
@@ -78,31 +76,37 @@ io.on('connection', function(socket){
  let queue = [];
 
  socket.on('searchGame', function(data){
-   console.log(players);
+   //console.log(socket);
 
    queue.push(players.find((search) => {return search.id == socket.id}));
    console.log(queue);
    if(queue.length >= 2){
 
      socket.join('game', () => {
+       console.log('tyts');
        //let rooms = Objects.keys(socket.rooms);
        //console.log(rooms); // [ <socket.id>, 'room 237' ]
        socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
-       socket.emit('joinGame', { hello: 'error' });
+       socket.emit('joiGame', { hello: 'js' });
      });
+     console.log(queue[0]);
+     console.log(queue[1].id);
 
-     io.sockets.socket(queue[0].id).emit('joinr', {hu : 'sd'});
+     io.sockets.sockets[queue[0].id].emit('joinr', {hu : 'то что нужно'});
    }
 
  });
 
  socket.on('joinro', function(data){
+   console.log('тут');
      socket.join('game', () => {
+       console.log('тут1');
        //let rooms = Objects.keys(socket.rooms);
        //console.log(rooms); // [ <socket.id>, 'room 237' ]
        socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
      });
-     socket.emit('joinGame', { hello: 'error' });
+     console.log('тут2');
+     socket.emit('joinGame', { hello: 'jg' });
  });
 
  socket.on('game', function(data){
