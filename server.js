@@ -56,14 +56,7 @@ io.on('connection', function(socket){
     //  console.log('2 ', search);
       return search.id == log});
     //console.log('3 ', nick);
-    /*for(let i =0 ;i < players.length; i++){
-
-      if(players[i].id == log){
-        nick = players[i].nick;
-        break;
-	     }
-     }
-     */
+    
      io.sockets.in('chat').emit('smsgChat', {nick: nick.nick, msg: data.msg});
      console.log({nick: nick.nick, msg: data.msg});
    });
