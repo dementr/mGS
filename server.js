@@ -5,7 +5,7 @@ const io = require('socket.io')({
 });
 
 io.attach(55555);
-
+#
 let searchsGame = require('./searchGame');
 let fcon = require('./connections');
 let fchat = require('./chat');
@@ -57,7 +57,7 @@ io.on('connection', function(socket){
     //  console.log('2 ', search);
       return search.id == log});
     //console.log('3 ', nick);
-    
+
      io.sockets.in('chat').emit('smsgChat', {nick: nick.nick, msg: data.msg});
      console.log({nick: nick.nick, msg: data.msg});
    });
