@@ -1,3 +1,4 @@
+console.log('Start server');
 const io = require('socket.io')({
  transports: ['websocket'],
  //pingTimeout: 50 //сколько мс перед отправкой нового пакета ping ( 25000).
