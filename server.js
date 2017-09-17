@@ -1,20 +1,44 @@
 console.log('Start server');
+
 const io = require('socket.io')({
  transports: ['websocket'],
  //pingTimeout: 50 //сколько мс перед отправкой нового пакета ping ( 25000).
 });
 
 io.attach(55555);
-#
+
 let searchsGame = require('./searchGame');
 let fcon = require('./connections');
 let fchat = require('./chat');
+let hash = require('./hash');
+let pdb = require('./db');
+let db = pdb.dbconn; // подключение к бд.
 
 let players = [];
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
 
   console.log(socket.handshake);
+
+  socket.on('reg', (data) => {
+
+    let usobj = pdb.userObj;
+
+    usobj.email = data.emal;
+    usobj.pass = data.password;
+    usobj.login = 'fc';
+    usobj.hash = hash.hash(data.email+data.password);
+
+    let answer = pdb.singInUser(db, table, usobj);
+
+    if (answer == 'email'){
+      socket.emit('emailError', {});
+    } else {
+      if (answer == false){ socket.emit('regError', {});
+      } else socket.emit('regOk', {});
+    }
+
+  });
 
   socket.on('auth', function(data){
     //console.log(data);

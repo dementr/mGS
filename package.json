@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "devDependencies": {
     "Socket.IO": "~2.0.3",
-    "mongodb" : "~2.2"
+    "mongodb" : "~2.2",
+    "bcrypt" : "~1.0.2"
   }
 }
