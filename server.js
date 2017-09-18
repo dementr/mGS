@@ -10,37 +10,44 @@ io.attach(55555);
 let searchsGame = require('./searchGame');
 let fcon = require('./connections');
 let fchat = require('./chat');
-let hash = require('./hash');
+let md5 = require('md5');
 let pdb = require('./db');
-let db = pdb.dbconn; // подключение к бд.
-
+//let db = pdb.dbconn; // подключение к бд.
+//console.log(pdb);
 let players = [];
 
 io.on('connection', (socket) => {
 
   console.log(socket.handshake);
+  console.log('new user connection');
 
+  // user registration
   socket.on('reg', (data) => {
-
+    console.log(data);
     let usobj = pdb.userObj;
 
-    usobj.email = data.emal;
+    usobj.email = data.email;
     usobj.pass = data.password;
     usobj.login = 'fc';
-    usobj.hash = hash.hash(data.email+data.password);
-
-    let answer = pdb.singInUser(db, table, usobj);
-
+    usobj.hash = md5(data.email+data.password);
+    console.log(usobj);
+    let answer = pdb.singInUser('users', usobj);
+    console.log(answer);
     if (answer == 'email'){
       socket.emit('emailError', {});
+      console.log('emailError');
     } else {
       if (answer == false){ socket.emit('regError', {});
-      } else socket.emit('regOk', {});
+      console.log('regError');
+    } else {socket.emit('regOk', {});
+    console.log('regOk');
+    }
     }
 
   });
+  //end reg
 
-  socket.on('auth', function(data){
+  socket.on('auth', (data) => {
     //console.log(data);
     let {login, password} = data;
     //console.log(login);
