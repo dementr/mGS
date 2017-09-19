@@ -72,7 +72,7 @@ io.on('connection', (socket) => {
         players.push(new fcon.Player(res.login, socket.id, res._id));
         console.log(players);
         console.log(res.login);
-        socket.emit('authOk', {key: res._id, login : res.login});
+        socket.emit('authOk', {key: res._id, nick : res.login});
 
       }
   });
