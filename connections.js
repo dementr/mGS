@@ -4,9 +4,10 @@ module.exports = {
 
   Player : class Player {
 
-    constructor(nick, sid) {
+    constructor(nick, sid, key) {
       this.nick = nick;
       this.sid = sid;
+      this.hash = key;
     }
 
     get gnick() {
@@ -16,6 +17,10 @@ module.exports = {
 
     get gid(){
       return this.sid;
+    }
+
+    get gkey(){
+      return this.key;
     }
   },
 

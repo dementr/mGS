@@ -10,39 +10,40 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
   db = database;
   console.log('db connect');
 })
-//console.log(fcdb + " <> " + objID);
-module.exports = {
-
-  /*dbconn : fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
-    if(err){
-      console.log(err);
-    }
-    return database;
-  }),*/
-
-  //user data type
-  userObj : {
+//user data type
+  let userObj = {
     email : '',
     pass : '',
     login : '',
     hash : ''
-  },
+  }
 
   // Find one field
-  getOneData : (table, key, value) => {
-    console.log(table + " tab " + value + " val " + key);
-    db.collection(table).findOne({ key: value}, (err, result) => {
-      if(err){
-        console.log(err);
-        return false;
-      }
-      return result;
-    });
-  },
+  const getOneData = (table, key, value) => {
+      console.log('getOneData 0');
+    if(key == 'hash') {
+        console.log('getOneData 1');
+      return db.collection(table).findOne({hash:value});
+    }
 
-  //insert
-  postInsert : (table, value) => {
-    db.collection(table).insert(value, (err, result) =>{
+    if(key == 'email'){
+      return db.collection(table).findOne({email:value});
+    }
+
+  }
+
+  const getAllData = (table, key, value) => {
+
+    return db.collection(table).find({email:value}).toArray();
+  }
+
+  const putUpdate = (table, key, value) => {
+    return db.collection(table).updateOne({_id:value.key}, { $set: 'login' : value.login});
+  }
+
+  const postInsert = (table, value) => {
+
+    return db.collection(table).insert(value, (err, result) =>{
       if(err){
         console.log(err);
         return false;
@@ -50,16 +51,64 @@ module.exports = {
         return true;
       }
     });
-  },
+  }
 
   //regist user
-  singInUser : (table='users', value) => {
-    console.log(table + " tab " + value);
-    if(getOneData(table, 'email', value.email)){
-      return 'email';
-    } else {
-      return postInsert(table, value);
-    }
-  },
+  const singInUser = async (table='users', value) => {
 
-}
+    if(await getOneData(table, 'email', value.email) == null){
+      return postInsert(table, value);
+    } else {
+        return 'email';
+    }
+  }
+
+  const auth = async (table='users', value) => {
+    console.log('auth 0');
+    let res = await getOneData(table, 'hash', value);
+    console.log('auth 1');
+    console.log(res);
+    if(res == null){
+      console.log('auth 2');
+      return false;
+    } else {
+      console.log('auth 3');
+        return res;
+    }
+  }
+
+  const updatel = async (table='users', value) => {
+    console.log('auth 0');
+    let res = await putUpdate(table, 'hash', value);
+    console.log('auth 1');
+    console.log(res);
+    if(res == null){
+      console.log('auth 2');
+      return false;
+    } else {
+      console.log('auth 3');
+        return res;
+    }
+  }
+
+  /*
+  const singInUser = async (table='users', value) => {
+    //console.log(value.email);
+    let q = await getOneData(table, 'email', value.email);
+    console.log(q);
+    if(q == null){
+      return postInsert(table, value);
+    } else {
+        return 'email';
+    }
+  }
+  */
+
+  module.exports = {
+    getOneData,
+    postInsert,
+    singInUser,
+    auth,
+    updatel,
+    userObj
+  }

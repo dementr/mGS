@@ -18,11 +18,11 @@ let players = [];
 
 io.on('connection', (socket) => {
 
-  console.log(socket.handshake);
+  //console.log(socket.handshake);
   console.log('new user connection');
 
   // user registration
-  socket.on('reg', (data) => {
+  socket.on('reg', async (data) => {
     console.log(data);
     let usobj = pdb.userObj;
 
@@ -30,34 +30,75 @@ io.on('connection', (socket) => {
     usobj.pass = data.password;
     usobj.login = 'fc';
     usobj.hash = md5(data.email+data.password);
+
     console.log(usobj);
-    let answer = pdb.singInUser('users', usobj);
-    console.log(answer);
+    let answer = await pdb.singInUser('users', usobj);
+    //console.log(answer + 'answer');
     if (answer == 'email'){
       socket.emit('emailError', {});
       console.log('emailError');
     } else {
-      if (answer == false){ socket.emit('regError', {});
-      console.log('regError');
-    } else {socket.emit('regOk', {});
-    console.log('regOk');
-    }
+      if (answer == false){
+        socket.emit('regError', {});
+        console.log('regError');
+      } else {socket.emit('regOk', {});
+        console.log('regOk');
+      }
     }
 
   });
   //end reg
 
-  socket.on('auth', (data) => {
+  socket.on('auth', async (data) => {
+    console.log('socket.on(\'auth\' 0');
     //console.log(data);
     let {login, password} = data;
-    //console.log(login);
-	  //console.log(password);
-     if(login == 'world2' && password == '12345'){
-        socket.emit('authOk', { hello: 'hello'});
-        players.push(new fcon.Player('data.nick', socket.id));
-        console.log(players);
+    console.log(login);
+	  console.log(password);
+    let hash = md5(login+password);
+    console.log(hash);
+    let res = await pdb.auth('users', hash);
+    console.log('socket.on(\'auth\' 1');
+     if(res == false){
+       console.log('socket.on(\'auth\' 2');
+        socket.emit('authError', { hello: 'error' });
+
       } else {
-	       socket.emit('errors', { hello: 'error' });
+        console.log('socket.on(\'auth\' 3');
+        if(res.login == 'fc'){
+          console.log('socket.on(\'auth\' 4');
+          res.login = 'null';
+        }
+        players.push(new fcon.Player(res.login, socket.id, res._id));
+        console.log(players);
+        console.log(res.login);
+        socket.emit('authOk', {key: res._id, login : res.login});
+
+      }
+  });
+
+  socket.on('setNick', async (data) => {
+    console.log('on(\'nick\' 0');
+    console.log(data);
+
+    let res = await pdb.updatel('users', data);
+    console.log('socket.on(\'auth\' 1');
+
+     if(res == false){
+       console.log('socket.on(\'auth\' 2');
+        socket.emit('errNick', { err: 'error' });
+      }
+
+      if(res == true){
+        console.log('socket.on(\'auth\' 2');
+         socket.emit('setNick', {});
+      }
+
+      if(res == 'busy'){
+        console.log('socket.on(\'auth\' 2');
+         socket.emit('busyNick', { hello: 'error' });
+       }
+
       }
   });
 
