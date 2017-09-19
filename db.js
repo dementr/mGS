@@ -38,7 +38,7 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
   }
 
   const putUpdate = (table, key, value) => {
-    return db.collection(table).updateOne({_id:value.key}, { $set: 'login' : value.login});
+    return db.collection(table).updateOne({id:value.key}, { $set: {'login' : value.login}});
   }
 
   const postInsert = (table, value) => {

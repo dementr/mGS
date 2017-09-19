@@ -99,7 +99,6 @@ io.on('connection', (socket) => {
          socket.emit('busyNick', { hello: 'error' });
        }
 
-      }
   });
 
   socket.on("disconnect", function (socket) {
