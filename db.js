@@ -83,7 +83,7 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
         return res;
     }
   }
-
+  // update login
   const updatel = async (table='users', value) => {
     //console.log('updatel 0');
     let res = await chekNick(value.nick);
