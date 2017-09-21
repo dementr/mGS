@@ -20,9 +20,9 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
 
   // Find one field
   const getOneData = (table, key, value) => {
-      console.log('getOneData 0');
+      //console.log('getOneData 0');
     if(key == 'hash') {
-        console.log('getOneData 1');
+        //console.log('getOneData 1');
       return db.collection(table).findOne({hash:value});
     }
 
@@ -32,13 +32,19 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
 
   }
 
+  // get all data
   const getAllData = (table, key, value) => {
 
     return db.collection(table).find({email:value}).toArray();
   }
 
+  const chekNick = (value) => {
+      //console.log('getOneData 0');
+      return db.collection('users').findOne({login:value});
+  }
+
   const putUpdate = (table, key, value) => {
-    return db.collection(table).updateOne({id:value.key}, { $set: {'login' : value.login}});
+    return db.collection(table).updateOne({email: value.email}, { $set: {'login' : value.nick}});
   }
 
   const postInsert = (table, value) => {
@@ -63,31 +69,39 @@ fcdb.connect('mongodb://localhost:27017/mGSDB', (err, database) => {
     }
   }
 
+  //авторизация
   const auth = async (table='users', value) => {
-    console.log('auth 0');
+    //console.log('auth 0');
     let res = await getOneData(table, 'hash', value);
-    console.log('auth 1');
-    console.log(res);
+    //console.log('auth 1');
+    //console.log(res);
     if(res == null){
-      console.log('auth 2');
+      //console.log('auth 2');
       return false;
     } else {
-      console.log('auth 3');
+      //console.log('auth 3');
         return res;
     }
   }
 
   const updatel = async (table='users', value) => {
-    console.log('auth 0');
-    let res = await putUpdate(table, 'hash', value);
-    console.log('auth 1');
-    console.log(res);
+    //console.log('updatel 0');
+    let res = await chekNick(value.nick);
+    //console.log('updatel 1');
+    //console.log(res);
     if(res == null){
-      console.log('auth 2');
-      return false;
+      //console.log('updatel 2');
+      let res = await putUpdate(table, 'hash', value);
+
+      if(res == null){
+        return false;
+      } else {
+        return true;
+      }
+
     } else {
-      console.log('auth 3');
-        return res;
+      //console.log('updatel 3');
+        return 'busy';
     }
   }
 
