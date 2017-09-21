@@ -85,6 +85,9 @@ io.on('connection', (socket) => {
           //console.log('tyt');
           //globalChatid = Objects.keys(socket.rooms);
         });
+
+        socket.join('countConnections', () => {});
+        io.sockets.in('countConnections').emit('countCon', {count: players.length});
       }
   });
 
@@ -152,22 +155,10 @@ io.on('connection', (socket) => {
   socket.on("disconnect", function (socket) {
     //console.log('disconnect '+ client);
     removePastCon(players ,client.id);
-
+    if(players.length > 0){
+      io.sockets.in('countConnections').emit('countCon', {count: players.length});
+    }
   });
-
- // creat chat
- /*
-  socket.on('joinchat', function(data){
-    //console.log(data);
-
-
-  //  console.log('0 ', players);
-    socket.join('chat', () => {
-      //let rooms = Objects.keys(socket.rooms);
-      //console.log(rooms);
-      socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
-    });
-  });*/
 
   socket.on('msgChat', function(data){
 
