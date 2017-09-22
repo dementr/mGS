@@ -14,8 +14,14 @@ let md5 = require('md5');
 let pdb = require('./db');
 //let db = pdb.dbconn; // подключение к бд.
 //console.log(pdb);
+
+// all players
 let players = [];
+// all messages public chat
 let messagesChat = [];
+// turn on the game
+let turn = [];
+let waitingStart = [];
 
 io.on('connection', (socket) => {
 
@@ -104,6 +110,7 @@ io.on('connection', (socket) => {
     }
   }
 
+// Установка ника
   socket.on('setNick', async (data) => {
     //console.log('setNick 0');
     //console.log(data);
@@ -152,14 +159,23 @@ io.on('connection', (socket) => {
     }
   }
 
+// удаление подключение из массива при выходе
   socket.on("disconnect", function (socket) {
     //console.log('disconnect '+ client);
     removePastCon(players ,client.id);
     if(players.length > 0){
       io.sockets.in('countConnections').emit('countCon', {count: players.length});
     }
+
+    if(turn.length > 0){
+      if(turn.find((search) => {return search.sid == client.id})){
+        turn.splice(turn.find((search) => {return search.sid == client.id}), 1);
+      }
+    }
+    client = null;
   });
 
+// отправка смс в общий чат
   socket.on('msgChat', function(data){
 
      io.sockets.in('chat').emit('msgChat', {nick:client.nick, msg: data.msg});
@@ -173,46 +189,32 @@ io.on('connection', (socket) => {
 
 //search game
 
- let queue = [];
-
  socket.on('searchGame', function(data){
    //console.log(socket);
-
-   queue.push(players.find((search) => {return search.id == socket.id}));
-   console.log(queue);
-   if(queue.length >= 2){
-
-     socket.join('game', () => {
-       console.log('tyts');
-       //let rooms = Objects.keys(socket.rooms);
-       //console.log(rooms); // [ <socket.id>, 'room 237' ]
-       socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
-       socket.emit('joiGame', { hello: 'js' });
-     });
-     console.log(queue[0]);
-     console.log(queue[1].id);
-
-     io.sockets.sockets[queue[0].id].emit('joinr', {hu : 'то что нужно'});
+   if(data.status == 'start'){
+     turn.push(players.find((search) => {return search.sid == socket.id}));
+     //console.log(turn);
+     if(turn.find((search) => {return search.sid == socket.id})){
+       socket.emit('searchGame', { status: 'added'});
+     } else socket.emit('searchGame', { status: 'failure'});
    }
 
- });
+   if(data.status == 'stop'){
+     turn.splice(turn.find((search) => {return search.sid == socket.id}), 1);
+     //console.log(turn);
+     socket.emit('searchGame', { status: 'removed'});
+   }
 
- socket.on('joinro', function(data){
-   console.log('тут');
-     socket.join('game', () => {
-       console.log('тут1');
-       //let rooms = Objects.keys(socket.rooms);
-       //console.log(rooms); // [ <socket.id>, 'room 237' ]
-       socket.to('chat', 'a new user has joined the room'); // broadcast to everyone in the room
-     });
-     console.log('тут2');
-     socket.emit('joinGame', { hello: 'jg' });
- });
-
- socket.on('game', function(data){
-   let nick = "";
-   nick = players.find((search) => {return search.id == log});
-   io.sockets.in('game').emit('gamecoor', {nick: nick.nick, msg: data.msg});
- });
+   if(data.status == 'accepted'){
+     //console.log(players.find((search) => {return search.sid == socket.id;}));
+     let id = players.findIndex((search) => {return search.sid == socket.id;});
+     console.log(id);
+     if(id != -1 ){
+       players[id].turnStatus = 'accepted';
+     }
+   }
 
 });
+
+
+searchsGame.turnCheck(turn, players, io);

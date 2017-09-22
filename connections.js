@@ -4,11 +4,12 @@ module.exports = {
 
   Player : class Player {
 
-    constructor(nick, sid, dbid, email) {
+    constructor(nick, sid, dbid, email, ts='0') {
       this.nick = nick;
       this.sid = sid;
       this.dbid = dbid;
       this.email = email;
+      this.turnStatus = ts;
     }
 
     get gnick() {
