@@ -57,6 +57,10 @@ const turnCheck = async (turn, players, io) => {
     if(turn.length > 0){
       console.log('проверка очереди, в ней '+turn.length+' человек');
     }
+
+    if(players.length == 0) {
+      turn = [];
+    }
   }, 2000);
 }
 

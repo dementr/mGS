@@ -192,6 +192,7 @@ io.on('connection', (socket) => {
  socket.on('searchGame', function(data){
    //console.log(socket);
    if(data.status == 'start'){
+
      turn.push(players.find((search) => {return search.sid == socket.id}));
      //console.log(turn);
      if(turn.find((search) => {return search.sid == socket.id})){
@@ -216,5 +217,5 @@ io.on('connection', (socket) => {
 
 });
 
-
+// активация функции обработки очереди
 searchsGame.turnCheck(turn, players, io);
