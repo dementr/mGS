@@ -194,7 +194,7 @@ io.on('connection', (socket) => {
    if(data.status == 'start'){
 
      turn.push(players.find((search) => {return search.sid == socket.id}));
-     //console.log(turn);
+     console.log(turn);
      if(turn.find((search) => {return search.sid == socket.id})){
        socket.emit('searchGame', { status: 'added'});
      } else socket.emit('searchGame', { status: 'failure'});
@@ -214,6 +214,7 @@ io.on('connection', (socket) => {
        players[id].turnStatus = 'accepted';
      }
    }
+});
 
 });
 

@@ -25,7 +25,9 @@ const decision = (first, second, players, io) => {
   //console.log(f + '< f s >' + s);
   if(f.turnStatus == 'accepted' && s.turnStatus == 'accepted'){
     //css - character selection screen
+    io.sockets.sockets[first].join('gametest', () => {});
     io.sockets.sockets[first].emit('searchGame', { status: 'css'});
+    io.sockets.sockets[second].join('gametest', () => {});
     io.sockets.sockets[second].emit('searchGame', { status: 'css'});
   } else {
     changeStatusTurn(first, second, players, io);
@@ -57,10 +59,10 @@ const turnCheck = async (turn, players, io) => {
     if(turn.length > 0){
       console.log('проверка очереди, в ней '+turn.length+' человек');
     }
-
+/*
     if(players.length == 0) {
       turn = [];
-    }
+    }*/
   }, 2000);
 }
 
